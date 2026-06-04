@@ -10,6 +10,9 @@ type Service = {
   municipality: string;
   price: string;
   netPrice: string;
+  adminNetPrice: string;
+  agencyDiscount: string;
+  adminDiscount: string;
   status: "PENDING" | "APPROVED" | "REJECTED";
   category: Category;
 };
@@ -113,7 +116,19 @@ export function ProviderDashboard() {
         </div>
         <div className="field">
           <label>Tarifa neta MXN</label>
-          <input name="netPrice" type="number" min="0" step="1" placeholder="15% menos si se deja vacia" />
+          <input name="netPrice" type="number" min="0" step="1" placeholder="Se calcula con descuento agencia" />
+        </div>
+        <div className="field">
+          <label>Descuento agencia %</label>
+          <input name="agencyDiscount" type="number" min="25" max="35" step="1" defaultValue="25" required />
+        </div>
+        <div className="field">
+          <label>Tarifa neta admin MXN</label>
+          <input name="adminNetPrice" type="number" min="0" step="1" placeholder="Se calcula con descuento admin" />
+        </div>
+        <div className="field">
+          <label>Descuento admin %</label>
+          <input name="adminDiscount" type="number" min="25" max="35" step="1" defaultValue="35" required />
         </div>
         <div className="field">
           <label>WhatsApp</label>
@@ -176,7 +191,7 @@ export function ProviderDashboard() {
               <div>
                 <strong>{service.name}</strong>
                 <div className="muted">
-                  {service.category.name} · {service.municipality} · Publica ${Number(service.price).toLocaleString("es-MX")} · Neta ${Number(service.netPrice).toLocaleString("es-MX")}
+                  {service.category.name} · {service.municipality} · Publica ${Number(service.price).toLocaleString("es-MX")} · Agencia ${Number(service.netPrice).toLocaleString("es-MX")} ({Number(service.agencyDiscount || 25)}%) · Admin ${Number(service.adminNetPrice).toLocaleString("es-MX")} ({Number(service.adminDiscount || 35)}%)
                 </div>
               </div>
               <span className={`badge ${service.status === "PENDING" ? "pending" : service.status === "REJECTED" ? "rejected" : ""}`}>

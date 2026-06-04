@@ -38,6 +38,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   const body = await request.json();
   const status = body.status && Object.values(ServiceStatus).includes(body.status) ? body.status : undefined;
+  const agencyDiscount = body.agencyDiscount ? Number(body.agencyDiscount) : undefined;
+  const adminDiscount = body.adminDiscount ? Number(body.adminDiscount) : undefined;
+  if (
+    (agencyDiscount !== undefined && (agencyDiscount < 25 || agencyDiscount > 35)) ||
+    (adminDiscount !== undefined && (adminDiscount < 25 || adminDiscount > 35)) ||
+    (agencyDiscount !== undefined && adminDiscount !== undefined && adminDiscount < agencyDiscount)
+  ) {
+    return NextResponse.json({ error: "Los descuentos deben estar entre 25% y 35%, y admin debe tener descuento mayor o igual al de agencia" }, { status: 400 });
+  }
   const paymentMethods = Array.isArray(body.paymentMethods)
     ? body.paymentMethods.filter((item: string) => ["TRANSFER", "CARD"].includes(item)).join(",")
     : body.paymentMethods;
@@ -50,6 +59,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       address: body.address,
       price: body.price ? Number(body.price) : undefined,
       netPrice: body.netPrice ? Number(body.netPrice) : undefined,
+      adminNetPrice: body.adminNetPrice ? Number(body.adminNetPrice) : undefined,
+      agencyDiscount,
+      adminDiscount,
       description: body.description,
       schedules: body.schedules,
       includes: body.includes,

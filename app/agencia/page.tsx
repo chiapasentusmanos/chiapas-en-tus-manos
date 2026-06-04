@@ -19,7 +19,7 @@ export default async function AgencyPage() {
         name: service.name,
         municipality: service.municipality,
         price: Number(service.price),
-        netPrice: Number(service.netPrice || Math.round(Number(service.price) * 0.85))
+        netPrice: Number(service.netPrice || Math.round(Number(service.price) * 0.75))
       }))
     : await prisma.service.findMany({
         where: { status: "APPROVED" },

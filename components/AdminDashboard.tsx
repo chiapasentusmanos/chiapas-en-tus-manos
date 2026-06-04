@@ -17,7 +17,7 @@ type Summary = {
   agencies?: Array<{ id: string; agencyName: string; rfc: string; rnt: string; status: string; verificationCode?: string; user: { name: string; email: string } } & VerificationDocs>;
   guides?: Array<{ id: string; guideType: string; scope: string; certificationNumber: string; certificationDocumentUrl?: string; ineDocumentUrl?: string; languages: string; municipalities: string; yearsExperience: number; status: string; verificationCode?: string; user: { name: string; email: string } }>;
   brandProfiles?: Array<{ id: string; businessName: string; rfc: string; registrationNumber: string; municipality: string; description: string; whatsapp: string; status: string; verificationCode?: string; user: { name: string; email: string } }>;
-  services: Array<{ id: string; name: string; municipality: string; price: string; netPrice: string; status: string; category: { name: string } }>;
+  services: Array<{ id: string; name: string; municipality: string; price: string; netPrice: string; adminNetPrice: string; agencyDiscount: string; adminDiscount: string; status: string; category: { name: string } }>;
   brandProducts?: Array<{ id: string; name: string; productCategory: string; originMunicipality: string; price: string; stock: number; status: string; brandProfile: { businessName: string; registrationNumber: string } }>;
   reservations?: Reservation[];
 };
@@ -111,12 +111,18 @@ export function AdminDashboard() {
     if (!price) return;
     const netPrice = window.prompt("Tarifa neta MXN", String(Number(service.netPrice)));
     if (!netPrice) return;
+    const adminNetPrice = window.prompt("Tarifa neta admin MXN", String(Number(service.adminNetPrice)));
+    if (!adminNetPrice) return;
+    const agencyDiscount = window.prompt("Descuento agencia %", String(Number(service.agencyDiscount || 25)));
+    if (!agencyDiscount) return;
+    const adminDiscount = window.prompt("Descuento admin %", String(Number(service.adminDiscount || 35)));
+    if (!adminDiscount) return;
     const municipality = window.prompt("Municipio", service.municipality);
     if (!municipality) return;
     await fetch(`/api/services/${service.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, price, netPrice, municipality })
+      body: JSON.stringify({ name, price, netPrice, adminNetPrice, agencyDiscount, adminDiscount, municipality })
     });
     setMessage("Servicio editado.");
     await load();
@@ -260,7 +266,7 @@ export function AdminDashboard() {
                 <div>
                   <strong>{service.name}</strong>
                   <div className="muted">
-                    {service.category.name} · {service.municipality} · Publica ${Number(service.price).toLocaleString("es-MX")} · Neta ${Number(service.netPrice).toLocaleString("es-MX")}
+                    {service.category.name} · {service.municipality} · Publica ${Number(service.price).toLocaleString("es-MX")} · Agencia ${Number(service.netPrice).toLocaleString("es-MX")} ({Number(service.agencyDiscount || 25)}%) · Admin ${Number(service.adminNetPrice).toLocaleString("es-MX")} ({Number(service.adminDiscount || 35)}%)
                   </div>
                   <span className={`badge ${service.status === "PENDING" ? "pending" : service.status === "REJECTED" ? "rejected" : ""}`}>
                     {service.status}

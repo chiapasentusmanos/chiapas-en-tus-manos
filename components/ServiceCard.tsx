@@ -5,7 +5,7 @@ import { T } from "@/components/T";
 
 export function ServiceCard({ service, agency = false }: { service: ServiceCardType; agency?: boolean }) {
   const image = service.images[0]?.url || "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1200&q=80";
-  const netPrice = service.netPrice ?? Math.round(Number(service.price) * 0.85);
+  const netPrice = service.netPrice ?? Math.round(Number(service.price) * 0.75);
 
   return (
     <article className="service-card">

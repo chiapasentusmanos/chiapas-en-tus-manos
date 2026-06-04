@@ -142,9 +142,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 });
   }
   const publicPrice = Number(field("price"));
-  const netPrice = field("netPrice") ? Number(field("netPrice")) : Math.round(publicPrice * 85) / 100;
-  if (!Number.isFinite(publicPrice) || publicPrice < 0 || !Number.isFinite(netPrice) || netPrice < 0) {
+  const agencyDiscount = field("agencyDiscount") ? Number(field("agencyDiscount")) : 25;
+  const adminDiscount = field("adminDiscount") ? Number(field("adminDiscount")) : 35;
+  const netPrice = field("netPrice") ? Number(field("netPrice")) : Math.round(publicPrice * (100 - agencyDiscount)) / 100;
+  const adminNetPrice = field("adminNetPrice") ? Number(field("adminNetPrice")) : Math.round(publicPrice * (100 - adminDiscount)) / 100;
+  if (!Number.isFinite(publicPrice) || publicPrice < 0 || !Number.isFinite(netPrice) || netPrice < 0 || !Number.isFinite(adminNetPrice) || adminNetPrice < 0) {
     return NextResponse.json({ error: "Las tarifas deben ser numeros validos" }, { status: 400 });
+  }
+  if (agencyDiscount < 25 || agencyDiscount > 35 || adminDiscount < 25 || adminDiscount > 35 || adminDiscount < agencyDiscount) {
+    return NextResponse.json({ error: "Los descuentos deben estar entre 25% y 35%, y el descuento admin debe ser mayor o igual al de agencia" }, { status: 400 });
   }
 
   const baseSlug = slugify(field("name"));
@@ -166,6 +172,9 @@ export async function POST(request: Request) {
       address: field("address"),
       price: publicPrice,
       netPrice,
+      adminNetPrice,
+      agencyDiscount,
+      adminDiscount,
       description: field("description"),
       schedules: field("schedules") || "Consultar disponibilidad",
       includes: field("includes") || "Consultar con el proveedor",

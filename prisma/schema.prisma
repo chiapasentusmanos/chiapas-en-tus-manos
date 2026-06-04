@@ -205,6 +205,9 @@ model Service {
   address        String
   price          Decimal       @db.Decimal(10, 2)
   netPrice       Decimal       @db.Decimal(10, 2)
+  adminNetPrice  Decimal       @db.Decimal(10, 2)
+  agencyDiscount Decimal       @default(25) @db.Decimal(5, 2)
+  adminDiscount  Decimal       @default(35) @db.Decimal(5, 2)
   description    String
   schedules      String
   includes       String

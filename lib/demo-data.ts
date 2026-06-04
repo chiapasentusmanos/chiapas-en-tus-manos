@@ -142,6 +142,9 @@ type DemoService = {
   address: string;
   price: string;
   netPrice: string;
+  adminNetPrice: string;
+  agencyDiscount: string;
+  adminDiscount: string;
   description: string;
   schedules: string;
   includes: string;
@@ -211,7 +214,10 @@ const initialServices: DemoService[] = [
     municipality: "Chiapa de Corzo",
     address: "Embarcadero Cahuaré, Chiapa de Corzo",
     price: "650",
-    netPrice: "552.50",
+    netPrice: "487.50",
+    adminNetPrice: "422.50",
+    agencyDiscount: "25",
+    adminDiscount: "35",
     description: "Recorrido por el Canon del Sumidero con visita panoramica a Chiapa de Corzo.",
     schedules: "Salidas 9:00, 11:00 y 13:00",
     includes: "Lancha compartida, guia local, seguro basico",
@@ -245,7 +251,10 @@ const initialServices: DemoService[] = [
     municipality: "Zinacantan",
     address: "Centro de Zinacantan",
     price: "480",
-    netPrice: "408",
+    netPrice: "360",
+    adminNetPrice: "312",
+    agencyDiscount: "25",
+    adminDiscount: "35",
     description: "Taller con artesanas locales para conocer telar de cintura, simbolos y cocina tradicional.",
     schedules: "Lunes a sabado, 10:00 a 16:00",
     includes: "Anfitriona local, materiales, degustacion",
@@ -279,7 +288,10 @@ const initialServices: DemoService[] = [
     municipality: "San Cristobal de las Casas",
     address: "Andador Guadalupano 12",
     price: "1450",
-    netPrice: "1232.50",
+    netPrice: "1087.50",
+    adminNetPrice: "942.50",
+    agencyDiscount: "25",
+    adminDiscount: "35",
     description: "Habitaciones comodas en casona restaurada, cerca de restaurantes y museos.",
     schedules: "Check-in 15:00, check-out 12:00",
     includes: "Desayuno continental, wifi, estacionamiento sujeto a disponibilidad",
@@ -774,7 +786,10 @@ export function createDemoService(owner: DemoUser, body: Record<string, string |
     municipality: field("municipality"),
     address: field("address"),
     price: field("price"),
-    netPrice: field("netPrice") || String(Math.round(Number(field("price")) * 85) / 100),
+    netPrice: field("netPrice") || String(Math.round(Number(field("price")) * (100 - Number(field("agencyDiscount") || 25))) / 100),
+    adminNetPrice: field("adminNetPrice") || String(Math.round(Number(field("price")) * (100 - Number(field("adminDiscount") || 35))) / 100),
+    agencyDiscount: field("agencyDiscount") || "25",
+    adminDiscount: field("adminDiscount") || "35",
     description: field("description"),
     schedules: field("schedules") || "Consultar disponibilidad",
     includes: field("includes") || "Consultar con el proveedor",
@@ -813,6 +828,9 @@ export function updateDemoService(id: string, body: Record<string, string>) {
   if (body.name) service.name = body.name;
   if (body.price) service.price = String(body.price);
   if (body.netPrice) service.netPrice = String(body.netPrice);
+  if (body.adminNetPrice) service.adminNetPrice = String(body.adminNetPrice);
+  if (body.agencyDiscount) service.agencyDiscount = String(body.agencyDiscount);
+  if (body.adminDiscount) service.adminDiscount = String(body.adminDiscount);
   if (body.municipality) service.municipality = body.municipality;
   if (body.status && Object.values(ServiceStatus).includes(body.status as ServiceStatus)) {
     service.status = body.status as ServiceStatus;

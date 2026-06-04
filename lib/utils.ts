@@ -4,6 +4,9 @@ export type ServiceCard = {
   municipality: string;
   price: unknown;
   netPrice?: unknown;
+  adminNetPrice?: unknown;
+  agencyDiscount?: unknown;
+  adminDiscount?: unknown;
   description: string;
   whatsapp: string;
   paymentMethods?: string | null;
