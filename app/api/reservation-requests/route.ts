@@ -10,22 +10,29 @@ function cleanPaymentMethod(value: unknown) {
 
 export async function GET() {
   const user = await getCurrentUser();
-  if (!user || !["ADMIN", "PROVIDER"].includes(user.role)) {
+  if (!user || !["ADMIN", "PROVIDER", "AGENCY", "GUIDE", "CLIENT"].includes(user.role)) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
   if (demoMode) {
     const reservations = getDemoReservations().filter((reservation) => {
       if (user.role === "ADMIN") return true;
+      if (user.role === "GUIDE") return true;
+      if (user.role === "CLIENT" || user.role === "AGENCY") return reservation.userId === user.id;
       return reservation.ownerId === user.id;
     });
     return NextResponse.json({ reservations });
   }
 
   const reservations = await prisma.reservationRequest.findMany({
-    where: user.role === "PROVIDER" ? { service: { ownerId: user.id } } : undefined,
+    where:
+      user.role === "PROVIDER"
+        ? { service: { ownerId: user.id } }
+        : user.role === "CLIENT" || user.role === "AGENCY"
+          ? { userId: user.id }
+          : undefined,
     include: { service: { select: { id: true, name: true, municipality: true, ownerId: true } }, user: { select: { name: true, email: true, role: true } } },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ travelDate: "asc" }, { createdAt: "desc" }],
     take: 100
   });
   return NextResponse.json({ reservations });
@@ -49,6 +56,7 @@ export async function POST(request: Request) {
       userId: user?.id || null,
       people: Number(body.people || 1),
       paymentMethod: cleanPaymentMethod(body.paymentMethod),
+      paymentStatus: "PENDING",
       status: "NEW",
       isAgency: user?.role === "AGENCY" || body.isAgency === true || body.isAgency === "true",
       createdAt: new Date().toISOString()

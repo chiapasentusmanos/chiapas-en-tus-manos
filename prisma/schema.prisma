@@ -36,6 +36,11 @@ enum ReservationStatus {
   CANCELLED
 }
 
+enum PaymentStatus {
+  PENDING
+  PAID
+}
+
 model User {
   id           String   @id @default(cuid())
   name         String
@@ -254,6 +259,8 @@ model ReservationRequest {
   travelDate DateTime?
   people    Int      @default(1)
   paymentMethod String @default("TRANSFER")
+  paymentStatus PaymentStatus @default(PENDING)
+  paidAt    DateTime?
   status    ReservationStatus @default(NEW)
   isAgency  Boolean  @default(false)
   createdAt DateTime @default(now())

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Check, Pencil, Trash2, X } from "lucide-react";
+import { ReservationCalendar } from "@/components/ReservationCalendar";
 
 type VerificationDocs = {
   rfcDocumentUrl?: string;
@@ -32,6 +33,8 @@ type Reservation = {
   travelDate?: string | null;
   people: number;
   paymentMethod: string;
+  paymentStatus?: string;
+  paidAt?: string | null;
   status: string;
   isAgency: boolean;
   createdAt: string;
@@ -255,8 +258,7 @@ export function AdminDashboard() {
               </div>
             ))}
           </div>
-          <h2>Solicitudes de reserva</h2>
-          <ReservationList reservations={summary.reservations || []} onUpdate={updateReservation} />
+          <ReservationCalendar canManage title="Calendario unificado de reservas" />
         </section>
         <section className="panel">
           <h2 style={{ marginTop: 0 }}>Servicios</h2>

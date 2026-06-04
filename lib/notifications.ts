@@ -176,12 +176,14 @@ export async function notifyReservationCreated(payload: {
     `Fecha deseada: ${payload.travelDate ? new Date(payload.travelDate).toLocaleDateString("es-MX") : "No capturada"}`,
     `Personas: ${payload.people}`,
     `Forma de pago: ${payment}`,
+    "Estado de pago: Pendiente de pago",
     `Mensaje: ${payload.message}`,
     `Revisar solicitudes: ${appUrl}/proveedor`
   ].join("\n");
 
-  if (payload.to) {
-    await sendEmail(payload.to, subject, text);
+  const recipients = [payload.to, adminEmail].filter(Boolean) as string[];
+  if (recipients.length > 0) {
+    await Promise.all([...new Set(recipients)].map((to) => sendEmail(to, subject, text)));
   } else {
     console.info("[correo de nueva reserva pendiente de destinatario]", { subject, text });
   }
@@ -203,19 +205,25 @@ export async function notifyReservationStatusChanged(payload: {
   code: string;
   serviceName: string;
   status: string;
+  paymentStatus?: string;
+  providerEmail?: string | null;
+  agencyEmail?: string | null;
 }) {
-  if (!payload.to) {
-    console.info("[correo de estado de reserva pendiente de destinatario]", payload);
-    return;
-  }
-
-  const subject = `Actualizacion de reserva ${payload.code}`;
+  const paid = payload.paymentStatus === "PAID";
+  const subject = paid ? `Reserva confirmada y pagada ${payload.code}` : `Reserva pendiente de pago ${payload.code}`;
   const text = [
     `Hola ${payload.customerName},`,
-    `Tu solicitud de reserva ${payload.code} para ${payload.serviceName} fue marcada como ${reservationStatusLabel(payload.status)}.`,
+    paid
+      ? `Tu reserva ${payload.code} para ${payload.serviceName} fue confirmada porque el pago esta cubierto al 100%.`
+      : `Tu reserva ${payload.code} para ${payload.serviceName} esta ${reservationStatusLabel(payload.status)} y queda pendiente de pago.`,
     `Puedes revisar tus solicitudes en: ${appUrl}/mis-reservas`,
     "Gracias por usar Chiapas En Tus Manos."
   ].join("\n\n");
 
-  await sendEmail(payload.to, subject, text);
+  const recipients = [payload.to, payload.providerEmail, payload.agencyEmail, adminEmail].filter(Boolean) as string[];
+  if (recipients.length === 0) {
+    console.info("[correo de estado de reserva pendiente de destinatario]", { subject, text, payload });
+    return;
+  }
+  await Promise.all([...new Set(recipients)].map((to) => sendEmail(to, subject, text)));
 }

@@ -2,6 +2,7 @@ CREATE TYPE "UserRole" AS ENUM ('CLIENT', 'PROVIDER', 'AGENCY', 'GUIDE', 'BRAND_
 CREATE TYPE "ServiceStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
 CREATE TYPE "VerificationStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
 CREATE TYPE "ReservationStatus" AS ENUM ('NEW', 'CONTACTED', 'CONFIRMED', 'CANCELLED');
+CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'PAID');
 
 CREATE TABLE "User" (
   "id" TEXT PRIMARY KEY,
@@ -195,6 +196,8 @@ CREATE TABLE "ReservationRequest" (
   "travelDate" TIMESTAMP(3),
   "people" INTEGER NOT NULL DEFAULT 1,
   "paymentMethod" TEXT NOT NULL DEFAULT 'TRANSFER',
+  "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'PENDING',
+  "paidAt" TIMESTAMP(3),
   "status" "ReservationStatus" NOT NULL DEFAULT 'NEW',
   "isAgency" BOOLEAN NOT NULL DEFAULT false,
   "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -204,5 +207,6 @@ CREATE TABLE "ReservationRequest" (
 );
 
 CREATE INDEX "ReservationRequest_status_idx" ON "ReservationRequest"("status");
+CREATE INDEX "ReservationRequest_paymentStatus_idx" ON "ReservationRequest"("paymentStatus");
 CREATE INDEX "ReservationRequest_createdAt_idx" ON "ReservationRequest"("createdAt");
 CREATE INDEX "ReservationRequest_code_idx" ON "ReservationRequest"("code");

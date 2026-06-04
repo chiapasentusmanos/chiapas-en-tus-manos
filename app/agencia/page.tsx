@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AgencyQuoteBuilder } from "@/components/AgencyQuoteBuilder";
+import { ReservationCalendar } from "@/components/ReservationCalendar";
 import { requireRole } from "@/lib/auth";
 import { demoMode, filterDemoServices } from "@/lib/demo-data";
 import { getDatabaseHealth } from "@/lib/db-health";
@@ -50,6 +51,7 @@ export default async function AgencyPage() {
           agentName={user.name}
           services={services}
         />
+        <ReservationCalendar title="Calendario de reservas de agencia" />
       </section>
     </main>
   );

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { PlusCircle } from "lucide-react";
+import { ReservationCalendar } from "@/components/ReservationCalendar";
 
 type Category = { id: string; name: string };
 type Service = {
@@ -16,39 +17,20 @@ type Service = {
   status: "PENDING" | "APPROVED" | "REJECTED";
   category: Category;
 };
-type Reservation = {
-  id: string;
-  code?: string | null;
-  name: string;
-  email?: string | null;
-  phone?: string | null;
-  message: string;
-  travelDate?: string | null;
-  people: number;
-  paymentMethod: string;
-  status: "NEW" | "CONTACTED" | "CONFIRMED" | "CANCELLED";
-  isAgency: boolean;
-  createdAt: string;
-  updatedAt?: string | null;
-  service?: { name: string; municipality: string };
-};
 
 export function ProviderDashboard() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [services, setServices] = useState<Service[]>([]);
-  const [reservations, setReservations] = useState<Reservation[]>([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function load() {
-    const [categoryResponse, serviceResponse, reservationResponse] = await Promise.all([
+    const [categoryResponse, serviceResponse] = await Promise.all([
       fetch("/api/categories"),
-      fetch("/api/provider/services"),
-      fetch("/api/reservation-requests")
+      fetch("/api/provider/services")
     ]);
     setCategories((await categoryResponse.json()).categories || []);
     setServices((await serviceResponse.json()).services || []);
-    setReservations((await reservationResponse.json()).reservations || []);
   }
 
   useEffect(() => {
@@ -72,16 +54,6 @@ export function ProviderDashboard() {
     }
     event.currentTarget.reset();
     setMessage("Servicio creado. Queda pendiente de aprobacion.");
-    await load();
-  }
-
-  async function updateReservation(id: string, status: Reservation["status"]) {
-    await fetch(`/api/reservation-requests/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status })
-    });
-    setMessage("Solicitud actualizada.");
     await load();
   }
 
@@ -202,36 +174,8 @@ export function ProviderDashboard() {
           {services.length === 0 && <p className="muted">Aun no tienes servicios.</p>}
         </div>
       </div>
-      <div className="panel full">
-        <h2 style={{ marginTop: 0 }}>Solicitudes de reserva</h2>
-        <div className="table-list">
-          {reservations.map((reservation) => (
-            <div className="row-item" key={reservation.id}>
-              <div>
-                <strong>{reservation.name}</strong>
-                <div className="muted">Folio: {reservation.code || reservation.id}</div>
-                <div className="muted">
-                  {reservation.service?.name || "Servicio"} · {reservation.people} persona(s) · {reservation.paymentMethod === "CARD" ? "Tarjeta Visa / Mastercard" : "Transferencia"}
-                </div>
-                <div className="muted">
-                  {reservation.phone || "Sin telefono"} · {reservation.email || "Sin correo"}{reservation.isAgency ? " · Agencia" : ""}
-                </div>
-                {reservation.travelDate && <div className="muted">Fecha deseada: {new Date(reservation.travelDate).toLocaleDateString("es-MX")}</div>}
-                <div className="muted">Ultima actualizacion: {new Date(reservation.updatedAt || reservation.createdAt).toLocaleDateString("es-MX")}</div>
-                <p style={{ margin: "8px 0 0" }}>{reservation.message}</p>
-                <span className={`badge ${reservation.status === "NEW" ? "pending" : reservation.status === "CANCELLED" ? "rejected" : ""}`}>
-                  {reservation.status === "NEW" ? "Nueva" : reservation.status === "CONTACTED" ? "Contactada" : reservation.status === "CONFIRMED" ? "Confirmada" : "Cancelada"}
-                </span>
-              </div>
-              <div className="actions">
-                <button className="ghost-button" onClick={() => updateReservation(reservation.id, "CONTACTED")}>Contactada</button>
-                <button className="button" onClick={() => updateReservation(reservation.id, "CONFIRMED")}>Confirmar</button>
-                <button className="button danger" onClick={() => updateReservation(reservation.id, "CANCELLED")}>Cancelar</button>
-              </div>
-            </div>
-          ))}
-          {reservations.length === 0 && <p className="muted">Aun no hay solicitudes.</p>}
-        </div>
+      <div className="full">
+        <ReservationCalendar canManage title="Calendario unificado de reservas" />
       </div>
     </div>
   );

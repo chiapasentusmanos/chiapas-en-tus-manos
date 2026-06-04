@@ -178,6 +178,8 @@ type DemoReservation = {
   travelDate?: string | null;
   people: number;
   paymentMethod: string;
+  paymentStatus?: "PENDING" | "PAID";
+  paidAt?: string | null;
   status: "NEW" | "CONTACTED" | "CONFIRMED" | "CANCELLED";
   isAgency: boolean;
   createdAt: string;
@@ -973,10 +975,15 @@ export function addDemoReservation(input: DemoReservation) {
   });
 }
 
-export function updateDemoReservation(id: string, status: DemoReservation["status"]) {
+export function updateDemoReservation(id: string, status: DemoReservation["status"], paymentStatus?: "PENDING" | "PAID") {
   const reservation = store().reservations.find((item) => item.id === id);
   if (!reservation) return null;
   reservation.status = status;
+  if (paymentStatus) {
+    reservation.paymentStatus = paymentStatus;
+    reservation.paidAt = paymentStatus === "PAID" ? new Date().toISOString() : null;
+    if (paymentStatus === "PAID") reservation.status = "CONFIRMED";
+  }
   reservation.updatedAt = new Date().toISOString();
   return reservation;
 }

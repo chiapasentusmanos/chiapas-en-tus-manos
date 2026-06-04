@@ -567,6 +567,27 @@ pre {
   font-size: 0.88rem;
 }
 
+.reservation-calendar {
+  display: grid;
+  gap: 16px;
+}
+
+.compact-head {
+  margin-bottom: 0;
+}
+
+.calendar-list,
+.calendar-day {
+  display: grid;
+  gap: 12px;
+}
+
+.calendar-date {
+  font-weight: 900;
+  color: var(--forest);
+  text-transform: capitalize;
+}
+
 .disabled-link {
   opacity: 0.52;
   pointer-events: none;
