@@ -121,6 +121,7 @@ CREATE TABLE "Service" (
   "municipality" TEXT NOT NULL,
   "address" TEXT NOT NULL,
   "price" DECIMAL(10,2) NOT NULL,
+  "netPrice" DECIMAL(10,2) NOT NULL,
   "description" TEXT NOT NULL,
   "schedules" TEXT NOT NULL,
   "includes" TEXT NOT NULL,

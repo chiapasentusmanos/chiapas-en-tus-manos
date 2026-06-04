@@ -18,15 +18,17 @@ export default async function AgencyPage() {
         id: service.id,
         name: service.name,
         municipality: service.municipality,
-        price: Number(service.price)
+        price: Number(service.price),
+        netPrice: Number(service.netPrice || Math.round(Number(service.price) * 0.85))
       }))
     : await prisma.service.findMany({
         where: { status: "APPROVED" },
-        select: { id: true, name: true, municipality: true, price: true },
+        select: { id: true, name: true, municipality: true, price: true, netPrice: true },
         orderBy: { name: "asc" }
       }).then((items) => items.map((service) => ({
         ...service,
-        price: Number(service.price)
+        price: Number(service.price),
+        netPrice: Number(service.netPrice)
       })));
 
   return (

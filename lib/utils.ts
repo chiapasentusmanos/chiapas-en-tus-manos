@@ -3,6 +3,7 @@ export type ServiceCard = {
   name: string;
   municipality: string;
   price: unknown;
+  netPrice?: unknown;
   description: string;
   whatsapp: string;
   paymentMethods?: string | null;

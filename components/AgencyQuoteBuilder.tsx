@@ -9,6 +9,7 @@ type QuoteService = {
   name: string;
   municipality: string;
   price: number;
+  netPrice: number;
 };
 
 type QuoteItem = {
@@ -16,6 +17,8 @@ type QuoteItem = {
   concept: string;
   quantity: number;
   unitPrice: number;
+  publicPrice: number;
+  netPrice: number;
 };
 
 type AgencyQuoteBuilderProps = {
@@ -32,21 +35,26 @@ export function AgencyQuoteBuilder({ agencyName, agentName, services }: AgencyQu
   const [clientWhatsapp, setClientWhatsapp] = useState("");
   const [travelDate, setTravelDate] = useState("");
   const [validUntil, setValidUntil] = useState("");
+  const [showNetPrice, setShowNetPrice] = useState(false);
   const [notes, setNotes] = useState("Precios sujetos a disponibilidad. Cotizacion expresada en MXN con impuestos incluidos.");
   const [items, setItems] = useState<QuoteItem[]>([
     {
       serviceId: services[0]?.id || "manual",
       concept: services[0]?.name || "",
       quantity: 1,
-      unitPrice: services[0]?.price || 0
+      unitPrice: services[0]?.price || 0,
+      publicPrice: services[0]?.price || 0,
+      netPrice: services[0]?.netPrice || Math.round((services[0]?.price || 0) * 85) / 100
     }
   ]);
 
   const totals = useMemo(() => {
     const total = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+    const netTotal = items.reduce((sum, item) => sum + item.quantity * item.netPrice, 0);
+    const margin = total - netTotal;
     const subtotal = total / (1 + IVA_RATE);
     const tax = total - subtotal;
-    return { subtotal, tax, total };
+    return { subtotal, tax, total, netTotal, margin };
   }, [items]);
 
   const quoteCode = useMemo(() => `CETM-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}`, []);
@@ -68,7 +76,8 @@ export function AgencyQuoteBuilder({ agencyName, agentName, services }: AgencyQu
     ].filter(Boolean);
 
     items.forEach((item, index) => {
-      lines.push(`${index + 1}. ${item.concept || "Concepto"} | Cantidad: ${item.quantity} | Unitario: ${money(item.unitPrice)} | Importe: ${money(item.quantity * item.unitPrice)}`);
+      const baseLine = `${index + 1}. ${item.concept || "Concepto"} | Cantidad: ${item.quantity} | Unitario: ${money(item.unitPrice)} | Importe: ${money(item.quantity * item.unitPrice)}`;
+      lines.push(showNetPrice ? `${baseLine} | Tarifa neta agencia: ${money(item.netPrice)}` : baseLine);
     });
 
     lines.push(
@@ -76,6 +85,8 @@ export function AgencyQuoteBuilder({ agencyName, agentName, services }: AgencyQu
       `Subtotal sin IVA: ${money(totals.subtotal)}`,
       `IVA incluido 16%: ${money(totals.tax)}`,
       `Total con impuestos incluidos: ${money(totals.total)}`,
+      showNetPrice ? `Total neto agencia: ${money(totals.netTotal)}` : "",
+      showNetPrice ? `Margen estimado agencia: ${money(totals.margin)}` : "",
       "",
       notes,
       "",
@@ -83,7 +94,7 @@ export function AgencyQuoteBuilder({ agencyName, agentName, services }: AgencyQu
     );
 
     return lines.join("\n");
-  }, [agencyName, agentName, clientEmail, clientName, clientWhatsapp, items, notes, quoteCode, totals, travelDate, validUntil]);
+  }, [agencyName, agentName, clientEmail, clientName, clientWhatsapp, items, notes, quoteCode, showNetPrice, totals, travelDate, validUntil]);
 
   function updateItem(index: number, patch: Partial<QuoteItem>) {
     setItems((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, ...patch } : item));
@@ -94,14 +105,16 @@ export function AgencyQuoteBuilder({ agencyName, agentName, services }: AgencyQu
     updateItem(index, {
       serviceId,
       concept: service?.name || "",
-      unitPrice: service?.price || 0
+      unitPrice: service?.price || 0,
+      publicPrice: service?.price || 0,
+      netPrice: service?.netPrice || Math.round((service?.price || 0) * 85) / 100
     });
   }
 
   function addItem() {
     setItems((current) => [
       ...current,
-      { serviceId: "manual", concept: "", quantity: 1, unitPrice: 0 }
+      { serviceId: "manual", concept: "", quantity: 1, unitPrice: 0, publicPrice: 0, netPrice: 0 }
     ]);
   }
 
@@ -146,6 +159,13 @@ export function AgencyQuoteBuilder({ agencyName, agentName, services }: AgencyQu
             <label>Vigencia de cotizacion</label>
             <input value={validUntil} onChange={(event) => setValidUntil(event.target.value)} type="date" />
           </div>
+          <div className="field">
+            <label>Tarifa neta en cotizacion</label>
+            <label className="toggle-line">
+              <input type="checkbox" checked={showNetPrice} onChange={(event) => setShowNetPrice(event.target.checked)} />
+              Mostrar tarifa neta en archivo/mensaje
+            </label>
+          </div>
         </div>
 
         <div className="quote-items">
@@ -171,6 +191,14 @@ export function AgencyQuoteBuilder({ agencyName, agentName, services }: AgencyQu
               <div className="field">
                 <label>Precio unitario con IVA</label>
                 <input value={item.unitPrice} min="0" type="number" onChange={(event) => updateItem(index, { unitPrice: Number(event.target.value) || 0 })} />
+              </div>
+              <div className="field">
+                <label>Tarifa neta agencia</label>
+                <input value={item.netPrice} min="0" type="number" onChange={(event) => updateItem(index, { netPrice: Number(event.target.value) || 0 })} />
+              </div>
+              <div className="field">
+                <label>Margen estimado</label>
+                <div className="readonly-field">{money((item.unitPrice - item.netPrice) * item.quantity)}</div>
               </div>
               <button className="ghost-button icon-button" type="button" onClick={() => removeItem(index)} aria-label="Eliminar concepto">
                 <Trash2 size={18} />
@@ -199,6 +227,8 @@ export function AgencyQuoteBuilder({ agencyName, agentName, services }: AgencyQu
           <div><span>Subtotal sin IVA</span><strong>{money(totals.subtotal)}</strong></div>
           <div><span>IVA incluido 16%</span><strong>{money(totals.tax)}</strong></div>
           <div><span>Total</span><strong>{money(totals.total)}</strong></div>
+          <div><span>Total neto agencia</span><strong>{money(totals.netTotal)}</strong></div>
+          <div><span>Margen estimado</span><strong>{money(totals.margin)}</strong></div>
         </div>
         <pre className="quote-text">{quoteText}</pre>
         <div className="actions">

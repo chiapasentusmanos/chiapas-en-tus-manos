@@ -32,6 +32,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
   const mapUrl = mapEmbed(service.latitude, service.longitude);
   const image = service.images[0]?.url || "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1200&q=80";
   const isAgency = user?.role === "AGENCY";
+  const canSeeNetPrice = user?.role === "AGENCY" || user?.role === "ADMIN" || service.ownerId === user?.id;
+  const netPrice = "netPrice" in service && service.netPrice ? service.netPrice : Math.round(Number(service.price) * 0.85);
 
   return (
     <main className="page">
@@ -56,6 +58,13 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
         <aside className="panel">
           <span className="badge">{service.status === "APPROVED" ? "Aprobado" : service.status}</span>
           <h2 style={{ marginBottom: 6 }}>{money(String(service.price))}</h2>
+          <p className="muted" style={{ marginTop: 0 }}>Tarifa publica</p>
+          {canSeeNetPrice && (
+            <div className="message" style={{ margin: "12px 0" }}>
+              <strong>Tarifa neta agencia</strong>
+              <div style={{ marginTop: 6 }}>{money(String(netPrice))}</div>
+            </div>
+          )}
           <p className="muted">{service.address}</p>
           <div className="message" style={{ margin: "12px 0" }}>
             <strong style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>

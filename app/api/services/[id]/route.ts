@@ -49,6 +49,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       municipality: body.municipality,
       address: body.address,
       price: body.price ? Number(body.price) : undefined,
+      netPrice: body.netPrice ? Number(body.netPrice) : undefined,
       description: body.description,
       schedules: body.schedules,
       includes: body.includes,

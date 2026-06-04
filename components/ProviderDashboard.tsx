@@ -9,6 +9,7 @@ type Service = {
   name: string;
   municipality: string;
   price: string;
+  netPrice: string;
   status: "PENDING" | "APPROVED" | "REJECTED";
   category: Category;
 };
@@ -107,8 +108,12 @@ export function ProviderDashboard() {
           <input name="address" required />
         </div>
         <div className="field">
-          <label>Precio MXN</label>
+          <label>Tarifa publica MXN</label>
           <input name="price" type="number" min="0" step="1" required />
+        </div>
+        <div className="field">
+          <label>Tarifa neta MXN</label>
+          <input name="netPrice" type="number" min="0" step="1" placeholder="15% menos si se deja vacia" />
         </div>
         <div className="field">
           <label>WhatsApp</label>
@@ -170,7 +175,9 @@ export function ProviderDashboard() {
             <div className="row-item" key={service.id}>
               <div>
                 <strong>{service.name}</strong>
-                <div className="muted">{service.category.name} · {service.municipality} · ${Number(service.price).toLocaleString("es-MX")}</div>
+                <div className="muted">
+                  {service.category.name} · {service.municipality} · Publica ${Number(service.price).toLocaleString("es-MX")} · Neta ${Number(service.netPrice).toLocaleString("es-MX")}
+                </div>
               </div>
               <span className={`badge ${service.status === "PENDING" ? "pending" : service.status === "REJECTED" ? "rejected" : ""}`}>
                 {service.status === "PENDING" ? "Pendiente" : service.status === "APPROVED" ? "Aprobado" : "Rechazado"}

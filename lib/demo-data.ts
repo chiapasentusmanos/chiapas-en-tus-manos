@@ -141,6 +141,7 @@ type DemoService = {
   municipality: string;
   address: string;
   price: string;
+  netPrice: string;
   description: string;
   schedules: string;
   includes: string;
@@ -210,6 +211,7 @@ const initialServices: DemoService[] = [
     municipality: "Chiapa de Corzo",
     address: "Embarcadero Cahuaré, Chiapa de Corzo",
     price: "650",
+    netPrice: "552.50",
     description: "Recorrido por el Canon del Sumidero con visita panoramica a Chiapa de Corzo.",
     schedules: "Salidas 9:00, 11:00 y 13:00",
     includes: "Lancha compartida, guia local, seguro basico",
@@ -243,6 +245,7 @@ const initialServices: DemoService[] = [
     municipality: "Zinacantan",
     address: "Centro de Zinacantan",
     price: "480",
+    netPrice: "408",
     description: "Taller con artesanas locales para conocer telar de cintura, simbolos y cocina tradicional.",
     schedules: "Lunes a sabado, 10:00 a 16:00",
     includes: "Anfitriona local, materiales, degustacion",
@@ -276,6 +279,7 @@ const initialServices: DemoService[] = [
     municipality: "San Cristobal de las Casas",
     address: "Andador Guadalupano 12",
     price: "1450",
+    netPrice: "1232.50",
     description: "Habitaciones comodas en casona restaurada, cerca de restaurantes y museos.",
     schedules: "Check-in 15:00, check-out 12:00",
     includes: "Desayuno continental, wifi, estacionamiento sujeto a disponibilidad",
@@ -770,6 +774,7 @@ export function createDemoService(owner: DemoUser, body: Record<string, string |
     municipality: field("municipality"),
     address: field("address"),
     price: field("price"),
+    netPrice: field("netPrice") || String(Math.round(Number(field("price")) * 85) / 100),
     description: field("description"),
     schedules: field("schedules") || "Consultar disponibilidad",
     includes: field("includes") || "Consultar con el proveedor",
@@ -807,6 +812,7 @@ export function updateDemoService(id: string, body: Record<string, string>) {
   if (!service) return null;
   if (body.name) service.name = body.name;
   if (body.price) service.price = String(body.price);
+  if (body.netPrice) service.netPrice = String(body.netPrice);
   if (body.municipality) service.municipality = body.municipality;
   if (body.status && Object.values(ServiceStatus).includes(body.status as ServiceStatus)) {
     service.status = body.status as ServiceStatus;

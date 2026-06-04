@@ -141,6 +141,11 @@ export async function POST(request: Request) {
   if (required.some((key) => !field(key))) {
     return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 });
   }
+  const publicPrice = Number(field("price"));
+  const netPrice = field("netPrice") ? Number(field("netPrice")) : Math.round(publicPrice * 85) / 100;
+  if (!Number.isFinite(publicPrice) || publicPrice < 0 || !Number.isFinite(netPrice) || netPrice < 0) {
+    return NextResponse.json({ error: "Las tarifas deben ser numeros validos" }, { status: 400 });
+  }
 
   const baseSlug = slugify(field("name"));
   const slug = `${baseSlug}-${Date.now().toString(36)}`;
@@ -159,7 +164,8 @@ export async function POST(request: Request) {
       categoryId: field("categoryId"),
       municipality: field("municipality"),
       address: field("address"),
-      price: Number(field("price")),
+      price: publicPrice,
+      netPrice,
       description: field("description"),
       schedules: field("schedules") || "Consultar disponibilidad",
       includes: field("includes") || "Consultar con el proveedor",
