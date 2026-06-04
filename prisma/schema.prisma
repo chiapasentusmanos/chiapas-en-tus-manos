@@ -1,0 +1,266 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CLIENT
+  PROVIDER
+  AGENCY
+  GUIDE
+  BRAND_CHIAPAS
+  ADMIN
+}
+
+enum ServiceStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ReservationStatus {
+  NEW
+  CONTACTED
+  CONFIRMED
+  CANCELLED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(CLIENT)
+  phone        String?
+  status       VerificationStatus @default(APPROVED)
+  verificationCode String @default("")
+  authProvider String?
+  providerAccountId String?
+  reviewedAt   DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  providerProfile Provider?
+  agencyProfile   Agency?
+  guideProfile    Guide?
+  brandChiapasProfile BrandChiapasProfile?
+  services         Service[] @relation("ServiceOwner")
+  brandProducts    BrandProduct[]
+  reservationRequests ReservationRequest[]
+}
+
+model Provider {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  businessName String
+  rfc         String   @default("")
+  rnt         String   @default("")
+  rfcDocumentUrl String @default("")
+  rntDocumentUrl String @default("")
+  ineDocumentUrl String @default("")
+  fiscalAddressProofUrl String @default("")
+  status      VerificationStatus @default(PENDING)
+  verificationCode String @default("")
+  notifiedAt  DateTime?
+  reviewedAt  DateTime?
+  municipality String?
+  description String?
+  whatsapp    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  services Service[]
+}
+
+model Agency {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  agencyName  String
+  rfc         String   @default("")
+  rnt         String   @default("")
+  rfcDocumentUrl String @default("")
+  rntDocumentUrl String @default("")
+  ineDocumentUrl String @default("")
+  fiscalAddressProofUrl String @default("")
+  status      VerificationStatus @default(PENDING)
+  verificationCode String @default("")
+  notifiedAt  DateTime?
+  reviewedAt  DateTime?
+  contactName String?
+  whatsapp    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Guide {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  guideType   String
+  scope       String
+  certificationNumber String
+  certificationDocumentUrl String @default("")
+  ineDocumentUrl String @default("")
+  languages   String
+  municipalities String
+  yearsExperience Int @default(0)
+  bio         String
+  whatsapp    String
+  status      VerificationStatus @default(PENDING)
+  verificationCode String @default("")
+  notifiedAt  DateTime?
+  reviewedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model BrandChiapasProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  businessName String
+  rfc         String
+  registrationNumber String
+  municipality String
+  description String
+  whatsapp    String
+  status      VerificationStatus @default(PENDING)
+  verificationCode String @default("")
+  notifiedAt  DateTime?
+  reviewedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products BrandProduct[]
+
+  @@index([status])
+  @@index([registrationNumber])
+}
+
+model BrandProduct {
+  id             String        @id @default(cuid())
+  name           String
+  slug           String        @unique
+  productCategory String
+  originMunicipality String
+  price          Decimal       @db.Decimal(10, 2)
+  description    String
+  materials      String
+  presentation   String
+  stock          Int           @default(0)
+  shipping       String
+  whatsapp       String
+  paymentMethods String        @default("TRANSFER,CARD")
+  status         ServiceStatus @default(PENDING)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  ownerId String
+  brandProfileId String
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  brandProfile BrandChiapasProfile @relation(fields: [brandProfileId], references: [id], onDelete: Cascade)
+  images BrandProductImage[]
+
+  @@index([status])
+  @@index([productCategory])
+  @@index([originMunicipality])
+}
+
+model BrandProductImage {
+  id        String  @id @default(cuid())
+  url       String
+  alt       String?
+  productId String
+  product   BrandProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  slug     String    @unique
+  services Service[]
+}
+
+model Service {
+  id             String        @id @default(cuid())
+  name           String
+  slug           String        @unique
+  municipality   String
+  address        String
+  price          Decimal       @db.Decimal(10, 2)
+  description    String
+  schedules      String
+  includes       String
+  excludes       String
+  policies       String
+  whatsapp       String
+  paymentMethods String        @default("TRANSFER,CARD")
+  latitude       Decimal?      @db.Decimal(10, 7)
+  longitude      Decimal?      @db.Decimal(10, 7)
+  status         ServiceStatus @default(PENDING)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  ownerId    String
+  providerId String?
+  categoryId String
+
+  owner       User      @relation("ServiceOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  provider    Provider? @relation(fields: [providerId], references: [id], onDelete: SetNull)
+  category    Category  @relation(fields: [categoryId], references: [id])
+  images      Image[]
+  reservationRequests ReservationRequest[]
+
+  @@index([status])
+  @@index([municipality])
+  @@index([categoryId])
+}
+
+model Image {
+  id        String  @id @default(cuid())
+  url       String
+  alt       String?
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+}
+
+model ReservationRequest {
+  id        String   @id @default(cuid())
+  code      String   @default("")
+  name      String
+  email     String?
+  phone     String?
+  message   String
+  travelDate DateTime?
+  people    Int      @default(1)
+  paymentMethod String @default("TRANSFER")
+  status    ReservationStatus @default(NEW)
+  isAgency  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  serviceId String
+  userId    String?
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([code])
+}

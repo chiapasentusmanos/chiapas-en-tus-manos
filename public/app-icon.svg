@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Chiapas En Tus Manos">
+  <rect width="512" height="512" rx="96" fill="#f7f3ea"/>
+  <circle cx="256" cy="256" r="178" fill="#173f35"/>
+  <path d="M256 93 298 213 425 216 324 291 360 414 256 342 152 414 188 291 87 216 214 213Z" fill="#d7a84f"/>
+  <path d="M167 302c33 35 72 52 117 52 41 0 72-12 94-36" fill="none" stroke="#f7f3ea" stroke-width="26" stroke-linecap="round"/>
+  <path d="M161 256c39-48 81-72 127-72 35 0 64 12 87 36" fill="none" stroke="#f7f3ea" stroke-width="22" stroke-linecap="round"/>
+  <circle cx="196" cy="253" r="16" fill="#f7f3ea"/>
+  <circle cx="316" cy="253" r="16" fill="#f7f3ea"/>
+</svg>
