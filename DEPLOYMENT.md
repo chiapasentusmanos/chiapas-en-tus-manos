@@ -57,6 +57,8 @@ DATABASE_URL="TU_SUPABASE_DATABASE_URL" npm run prisma:deploy
 DATABASE_URL="TU_SUPABASE_DATABASE_URL" npm run db:seed
 ```
 
+En el proyecto Supabase `gqdtzxoqxwyxtsyybmbp` las migraciones ya fueron aplicadas correctamente desde este entorno. Si el seed por CLI no responde, carga al menos categorias y usuario administrador desde el SQL Editor con el bloque indicado durante la configuracion.
+
 ## 4. Desplegar en Vercel
 
 ### Opcion con dashboard
@@ -88,8 +90,9 @@ vercel deploy --prod
 4. Entra a `/admin` y aprueba registros.
 5. Publica un servicio y un producto.
 6. Confirma que aparecen en `/catalogo`, `/guias` y `/marca-chiapas`.
-7. Prueba botones de WhatsApp.
-8. Revisa `/privacidad` y `/terminos`.
+7. Entra como agencia y prueba `/agencia`: genera una cotizacion, descarga, imprime/PDF, WhatsApp y correo.
+8. Prueba botones de WhatsApp.
+9. Revisa `/privacidad` y `/terminos`.
 
 ## 6. Bloqueadores actuales para que Codex lo publique directamente
 

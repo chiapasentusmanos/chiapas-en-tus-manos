@@ -119,6 +119,7 @@ El seed crea categorias, usuarios demo y servicios iniciales.
 6. El administrador aprueba el servicio pendiente.
 7. El servicio aparece en `/catalogo`.
 8. En la tarjeta o pagina individual, usa `Reservar por WhatsApp`.
+9. Si entras como agencia, ve a `/agencia` para elaborar cotizaciones con IVA incluido, descargarlas y enviarlas por WhatsApp o correo.
 
 ## Base de datos
 
@@ -148,7 +149,7 @@ Tambien puedes validar produccion con `/api/health` despues del deploy.
 3. Ejecuta migraciones desde local apuntando a Supabase:
 
 ```bash
-npm run prisma:migrate
+npm run prisma:deploy
 npm run db:seed
 ```
 
@@ -167,6 +168,7 @@ npm run db:seed
 - El administrador puede aprobar, rechazar, editar campos basicos y eliminar servicios.
 - El administrador y el proveedor pueden dar seguimiento a solicitudes: nueva, contactada, confirmada o cancelada.
 - La agencia puede registrarse, navegar el catalogo y el mensaje de WhatsApp se identifica como agencia.
+- La agencia tiene panel propio en `/agencia` para elaborar cotizaciones practicas con subtotal, IVA incluido 16%, total, descarga, impresion/PDF, WhatsApp y correo.
 - Los guias certificados tienen registro propio como `GUIDE`, con catalogo publico en `/guias`.
 - El registro de guia exige tipo de guia `NOM-08` o `NOM-09`, alcance local o nacional, numero de certificacion, WhatsApp, idiomas, municipios o zonas de operacion, anos de experiencia, semblanza, certificacion en PDF e INE en PDF.
 - El catalogo de guias permite filtrar por texto, tipo de guia y alcance local o nacional.
