@@ -82,17 +82,20 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
         <>
           <div className="field">
             <label>Telefono</label>
-            <input name="phone" required />
+            <input name="phone" required={role !== "PROVIDER" && role !== "AGENCY"} />
           </div>
           {(role === "PROVIDER" || role === "AGENCY") && (
             <>
+              <div className="message full">
+                Modo pruebas: los datos fiscales, documentos y contacto son opcionales temporalmente.
+              </div>
               <div className="field">
                 <label>{role === "PROVIDER" ? "Nombre comercial" : "Nombre de agencia"}</label>
-                <input name={role === "PROVIDER" ? "businessName" : "agencyName"} required />
+                <input name={role === "PROVIDER" ? "businessName" : "agencyName"} />
               </div>
               <div className="field">
                 <label>WhatsApp</label>
-                <input name="whatsapp" placeholder="529611234567" required />
+                <input name="whatsapp" placeholder="529611234567" />
               </div>
             </>
           )}
@@ -110,7 +113,6 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                 <label>RFC</label>
                 <input
                   name="rfc"
-                  required
                   minLength={12}
                   maxLength={13}
                   pattern="[A-Za-z&Ññ]{3,4}[0-9]{6}[A-Za-z0-9]{3}"
@@ -148,23 +150,23 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               </div>
               <div className="field">
                 <label>Registro Nacional de Turismo (RNT)</label>
-                <input name="rnt" required placeholder="RNT-000000" style={{ textTransform: "uppercase" }} />
+                <input name="rnt" placeholder="RNT-000000" style={{ textTransform: "uppercase" }} />
               </div>
               <div className="field">
                 <label>Documento RFC (PDF)</label>
-                <input name="rfcDocument" type="file" accept="application/pdf,.pdf" required />
+                <input name="rfcDocument" type="file" accept="application/pdf,.pdf" />
               </div>
               <div className="field">
                 <label>Documento RNT (PDF)</label>
-                <input name="rntDocument" type="file" accept="application/pdf,.pdf" required />
+                <input name="rntDocument" type="file" accept="application/pdf,.pdf" />
               </div>
               <div className="field">
                 <label>INE (PDF)</label>
-                <input name="ineDocument" type="file" accept="application/pdf,.pdf" required />
+                <input name="ineDocument" type="file" accept="application/pdf,.pdf" />
               </div>
               <div className="field">
                 <label>Comprobante de domicilio fiscal (PDF)</label>
-                <input name="fiscalAddressProof" type="file" accept="application/pdf,.pdf" required />
+                <input name="fiscalAddressProof" type="file" accept="application/pdf,.pdf" />
               </div>
             </>
           )}
@@ -172,11 +174,11 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
             <>
               <div className="field">
                 <label>Municipio</label>
-                <input name="municipality" required />
+                <input name="municipality" />
               </div>
               <div className="field full">
                 <label>Descripcion</label>
-                <textarea name="description" required />
+                <textarea name="description" />
               </div>
             </>
           )}

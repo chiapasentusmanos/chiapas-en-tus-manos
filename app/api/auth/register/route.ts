@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { setSession } from "@/lib/auth";
 import { createDemoUser, demoMode, findDemoUserByEmail } from "@/lib/demo-data";
 import { createVerificationCode, notifyAdminRegistration } from "@/lib/notifications";
-import { hasRnt, isValidRfc, normalizeIdentifier } from "@/lib/validation";
+import { isValidRfc, normalizeIdentifier } from "@/lib/validation";
 
 const DOCUMENT_FIELDS = [
   "rfcDocument",
@@ -134,17 +134,17 @@ export async function POST(request: Request) {
   if (role === "ADMIN") {
     return NextResponse.json({ error: "El registro de administradores esta deshabilitado. Usa el inicio de sesion asignado." }, { status: 403 });
   }
-  if (!phone) {
+  if (role !== "PROVIDER" && role !== "AGENCY" && !phone) {
     return NextResponse.json({ error: "El telefono es obligatorio" }, { status: 400 });
   }
   const rfc = normalizeIdentifier(value(body, "rfc"));
   const rnt = normalizeIdentifier(value(body, "rnt"));
 
-  if (role === "PROVIDER" && (!businessName || !whatsapp || !municipality || !description || !isValidRfc(rfc) || !hasRnt(rnt))) {
-    return NextResponse.json({ error: "Todos los campos son obligatorios para proveedores" }, { status: 400 });
+  if (role === "PROVIDER" && rfc && !isValidRfc(rfc)) {
+    return NextResponse.json({ error: "El RFC del proveedor no tiene un formato valido" }, { status: 400 });
   }
-  if (role === "AGENCY" && (!agencyName || !whatsapp || !isValidRfc(rfc) || !hasRnt(rnt))) {
-    return NextResponse.json({ error: "Todos los campos son obligatorios para agencias de viajes" }, { status: 400 });
+  if (role === "AGENCY" && rfc && !isValidRfc(rfc)) {
+    return NextResponse.json({ error: "El RFC de la agencia no tiene un formato valido" }, { status: 400 });
   }
   if (role === "GUIDE" && (!guideType || !guideScope || !certificationNumber || !languages || !municipalities || !yearsExperience || !bio || !whatsapp)) {
     return NextResponse.json({ error: "Todos los campos son obligatorios para guias certificados" }, { status: 400 });
@@ -152,15 +152,12 @@ export async function POST(request: Request) {
   if (role === "BRAND_CHIAPAS" && (!brandBusinessName || !municipality || !description || !whatsapp || !isValidRfc(rfc) || !marcaChiapasRegistrationNumber)) {
     return NextResponse.json({ error: "Todos los campos son obligatorios para Marca Chiapas" }, { status: 400 });
   }
-  const needsDocuments = role === "PROVIDER" || role === "AGENCY";
+  const canSaveOptionalDocuments = role === "PROVIDER" || role === "AGENCY";
   const needsGuideDocuments = role === "GUIDE";
   const needsApproval = role === "CLIENT" || role === "PROVIDER" || role === "AGENCY" || role === "GUIDE" || role === "BRAND_CHIAPAS";
-  const documents = needsDocuments ? await saveVerificationDocuments(body, email) : null;
+  const documents = canSaveOptionalDocuments ? await saveVerificationDocuments(body, email) : null;
   const guideDocuments = needsGuideDocuments ? await saveGuideDocuments(body, email) : null;
   const verificationCode = needsApproval ? createVerificationCode() : "";
-  if (needsDocuments && !documents) {
-    return NextResponse.json({ error: "Los documentos RFC, RNT, INE y comprobante de domicilio fiscal deben subirse en PDF" }, { status: 400 });
-  }
   if (needsGuideDocuments && !guideDocuments) {
     return NextResponse.json({ error: "La certificacion y el INE deben subirse en PDF" }, { status: 400 });
   }
