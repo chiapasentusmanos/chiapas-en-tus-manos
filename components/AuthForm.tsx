@@ -62,7 +62,6 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               <option value="AGENCY">Agencia de viajes</option>
               <option value="GUIDE">Guia de turistas certificado</option>
               <option value="BRAND_CHIAPAS">Marca Chiapas</option>
-              <option value="ADMIN">Administrador</option>
             </select>
           </div>
           <div className="field">
@@ -72,7 +71,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
         </>
           )}
       <div className="field">
-        <label>{mode === "register" && role === "ADMIN" ? "Usuario / correo electronico" : "Correo"}</label>
+        <label>Correo</label>
         <input name="email" type="email" required />
       </div>
       <div className="field">
@@ -81,12 +80,10 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       </div>
       {mode === "register" && (
         <>
-          {role !== "ADMIN" && (
-            <div className="field">
-              <label>Telefono</label>
-              <input name="phone" required />
-            </div>
-          )}
+          <div className="field">
+            <label>Telefono</label>
+            <input name="phone" required />
+          </div>
           {(role === "PROVIDER" || role === "AGENCY") && (
             <>
               <div className="field">

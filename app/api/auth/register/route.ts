@@ -131,7 +131,10 @@ export async function POST(request: Request) {
   if (!name || !email || !password || !Object.values(UserRole).includes(role)) {
     return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
   }
-  if (role !== "ADMIN" && !phone) {
+  if (role === "ADMIN") {
+    return NextResponse.json({ error: "El registro de administradores esta deshabilitado. Usa el inicio de sesion asignado." }, { status: 403 });
+  }
+  if (!phone) {
     return NextResponse.json({ error: "El telefono es obligatorio" }, { status: 400 });
   }
   const rfc = normalizeIdentifier(value(body, "rfc"));
@@ -170,7 +173,7 @@ export async function POST(request: Request) {
       email,
       role,
       phone,
-      status: role === "ADMIN" ? "APPROVED" : "PENDING",
+      status: "PENDING",
       verificationCode,
       businessName,
       brandBusinessName,
@@ -222,7 +225,7 @@ export async function POST(request: Request) {
       passwordHash,
       role,
       phone,
-      status: role === "ADMIN" ? "APPROVED" : "PENDING",
+      status: "PENDING",
       verificationCode,
       providerProfile:
         role === "PROVIDER"

@@ -7,7 +7,7 @@ export default async function LoginPage({ searchParams }: { searchParams?: Promi
     <main className="auth-shell">
       <section className="auth-box">
         <h1 className="page-title">Entrar</h1>
-        <p className="muted">Accede como cliente, proveedor, agencia o administrador.</p>
+        <p className="muted">Accede con tu cuenta. El administrador entra aqui con el correo y contrasena asignados.</p>
         {params?.pendiente === "cliente" && (
           <div className="message" style={{ marginTop: 16 }}>
             Tu cuenta de cliente turista fue registrada y esta pendiente de aprobacion por administracion.
