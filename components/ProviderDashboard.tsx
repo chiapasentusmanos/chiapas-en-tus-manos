@@ -53,7 +53,7 @@ export function ProviderDashboard() {
       return;
     }
     event.currentTarget.reset();
-    setMessage("Servicio creado. Queda pendiente de aprobacion.");
+    setMessage("Servicio guardado en tu catalogo de proveedor. Queda pendiente de aprobacion para el catalogo publico.");
     await load();
   }
 

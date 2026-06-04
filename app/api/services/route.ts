@@ -131,9 +131,6 @@ export async function POST(request: Request) {
   }
   const user = await requireRole(["PROVIDER", "ADMIN"]);
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  if (user.role === "PROVIDER" && user.providerProfile?.status !== "APPROVED") {
-    return NextResponse.json({ error: "Tu registro de proveedor debe ser aprobado por administracion antes de publicar servicios" }, { status: 403 });
-  }
 
   const body = await parseServiceBody(request);
   const field = (key: string) => String(body[key] || "");
