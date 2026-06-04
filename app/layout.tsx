@@ -43,6 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Link href="/guias">Guias</Link>
             <Link href="/marca-chiapas">Marca Chiapas</Link>
             {(user?.role === "CLIENT" || user?.role === "AGENCY") && <Link href="/mis-reservas">Mis reservas</Link>}
+            {user?.role === "AGENCY" && <Link href="/agencia">Panel agencia</Link>}
             {user?.role === "PROVIDER" && <Link href="/proveedor">Panel proveedor</Link>}
             {user?.role === "BRAND_CHIAPAS" && <Link href="/marca-chiapas/panel">Panel Marca Chiapas</Link>}
             {user?.role === "ADMIN" && <Link href="/admin">Admin</Link>}

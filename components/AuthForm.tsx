@@ -38,7 +38,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       setMessage(payload.error || "No se pudo completar la accion");
       return;
     }
-    const next = payload.user.role === "ADMIN" ? "/admin" : payload.user.role === "PROVIDER" ? "/proveedor" : payload.user.role === "GUIDE" ? "/guias" : payload.user.role === "BRAND_CHIAPAS" ? "/marca-chiapas/panel" : "/catalogo";
+    const next = payload.user.role === "ADMIN" ? "/admin" : payload.user.role === "PROVIDER" ? "/proveedor" : payload.user.role === "AGENCY" ? "/agencia" : payload.user.role === "GUIDE" ? "/guias" : payload.user.role === "BRAND_CHIAPAS" ? "/marca-chiapas/panel" : "/catalogo";
     router.push(next);
     router.refresh();
   }

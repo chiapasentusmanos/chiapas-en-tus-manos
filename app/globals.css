@@ -486,6 +486,73 @@ pre {
   flex-wrap: wrap;
 }
 
+.icon-button {
+  width: 44px;
+  min-height: 44px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+}
+
+.quote-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.quote-form,
+.quote-preview {
+  display: grid;
+  gap: 18px;
+}
+
+.quote-items {
+  display: grid;
+  gap: 12px;
+}
+
+.quote-item {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.1fr) minmax(180px, 1.2fr) 95px 150px 44px;
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fbf7;
+}
+
+.quote-total-box {
+  display: grid;
+  gap: 8px;
+}
+
+.quote-total-box div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.quote-total-box div:last-child {
+  border-bottom: 0;
+  color: var(--clay);
+  font-size: 1.15rem;
+}
+
+.quote-text {
+  max-height: 360px;
+  white-space: pre-wrap;
+  font-size: 0.88rem;
+}
+
+.disabled-link {
+  opacity: 0.52;
+  pointer-events: none;
+}
+
 .site-footer {
   display: flex;
   justify-content: space-between;
@@ -531,7 +598,9 @@ pre {
   .search-bar,
   .filters,
   .dashboard,
-  .detail {
+  .detail,
+  .quote-shell,
+  .quote-item {
     grid-template-columns: 1fr;
   }
 
