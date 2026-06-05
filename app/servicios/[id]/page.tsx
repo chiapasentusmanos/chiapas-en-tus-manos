@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CreditCard, MessageCircle } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { mapEmbed, money, paymentMethodLabels, whatsappUrl } from "@/lib/utils";
-import { ReservationRequestForm } from "@/components/ReservationRequestForm";
+import { mapEmbed, money, paymentMethodLabels } from "@/lib/utils";
 import { demoMode, getDemoServices } from "@/lib/demo-data";
 import { getDatabaseHealth } from "@/lib/db-health";
 import { T } from "@/components/T";
@@ -31,7 +30,6 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
   const mapUrl = mapEmbed(service.latitude, service.longitude);
   const image = service.images[0]?.url || "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1200&q=80";
-  const isAgency = user?.role === "AGENCY";
   const canSeeNetPrice = user?.role === "AGENCY" || user?.role === "ADMIN" || service.ownerId === user?.id;
   const agencyNetPrice = "netPrice" in service && service.netPrice ? service.netPrice : Math.round(Number(service.price) * 0.75);
   const adminNetPrice = "adminNetPrice" in service && service.adminNetPrice ? service.adminNetPrice : Math.round(Number(service.price) * 0.65);
@@ -74,10 +72,10 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
             </strong>
             <div style={{ marginTop: 8 }}>{paymentMethodLabels(service.paymentMethods).join(" · ")}</div>
           </div>
-          <a className="button" href={whatsappUrl(service.whatsapp, service.name, isAgency)} target="_blank" rel="noreferrer" style={{ width: "100%", margin: "12px 0" }}>
-            <MessageCircle size={18} /> <T es="Reservar por WhatsApp" en="Book via WhatsApp" />
-          </a>
-          <ReservationRequestForm serviceId={service.id} isAgency={isAgency} />
+          <Link className="button" href={`/checkout?type=service&id=${service.id}`} style={{ width: "100%", margin: "12px 0" }}>
+            <CreditCard size={18} /> <T es="Pagar / reservar" en="Pay / book" />
+          </Link>
+          <p className="muted">El contacto directo del proveedor se habilita despues del pago confirmado.</p>
           {mapUrl ? (
             <iframe className="map" src={mapUrl} title={`Mapa de ${service.name}`} loading="lazy" />
           ) : (

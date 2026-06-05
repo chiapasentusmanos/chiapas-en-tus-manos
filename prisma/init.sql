@@ -186,6 +186,27 @@ CREATE TABLE "BrandProductImage" (
   "productId" TEXT NOT NULL REFERENCES "BrandProduct"("id") ON DELETE CASCADE
 );
 
+CREATE TABLE "BrandProductOrder" (
+  "id" TEXT PRIMARY KEY,
+  "code" TEXT NOT NULL DEFAULT '',
+  "name" TEXT NOT NULL,
+  "email" TEXT,
+  "phone" TEXT,
+  "quantity" INTEGER NOT NULL DEFAULT 1,
+  "total" DECIMAL(10,2) NOT NULL,
+  "paymentMethod" TEXT NOT NULL DEFAULT 'CARD',
+  "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'PAID',
+  "paidAt" TIMESTAMP(3),
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "productId" TEXT NOT NULL REFERENCES "BrandProduct"("id") ON DELETE CASCADE,
+  "userId" TEXT REFERENCES "User"("id") ON DELETE SET NULL
+);
+
+CREATE INDEX "BrandProductOrder_code_idx" ON "BrandProductOrder"("code");
+CREATE INDEX "BrandProductOrder_paymentStatus_idx" ON "BrandProductOrder"("paymentStatus");
+CREATE INDEX "BrandProductOrder_createdAt_idx" ON "BrandProductOrder"("createdAt");
+
 CREATE TABLE "ReservationRequest" (
   "id" TEXT PRIMARY KEY,
   "code" TEXT NOT NULL DEFAULT '',

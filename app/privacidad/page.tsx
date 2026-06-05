@@ -14,15 +14,15 @@ export default function PrivacyPage() {
 
           <h2>Datos que podemos recopilar</h2>
           <p>
-            Podemos recopilar nombre, correo electronico, telefono, WhatsApp, datos de registro, documentos de
+            Podemos recopilar nombre, correo electronico, telefono, datos de registro, documentos de
             verificacion, informacion de servicios, productos, solicitudes de reserva y datos necesarios para administrar
             la cuenta.
           </p>
 
           <h2>Uso de la informacion</h2>
           <p>
-            Usamos la informacion para crear cuentas, validar registros, mostrar catalogos aprobados, enviar solicitudes
-            por WhatsApp, notificar al administrador, dar seguimiento a reservas y operar la plataforma.
+            Usamos la informacion para crear cuentas, validar registros, mostrar catalogos aprobados, procesar pagos,
+            notificar al administrador, dar seguimiento a reservas y operar la plataforma.
           </p>
 
           <h2>Documentos y verificacion</h2>
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
 
           <h2>Servicios externos</h2>
           <p>
-            La plataforma puede usar servicios externos como correo electronico, SMS, Google/Apple OAuth, WhatsApp,
+            La plataforma puede usar servicios externos como correo electronico, SMS, Google/Apple OAuth,
             Vercel, Supabase y proveedores de pago. Cada servicio puede aplicar sus propias politicas.
           </p>
 

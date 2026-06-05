@@ -49,7 +49,7 @@ export default async function CatalogPage({
             ? <T es="Modo demo activo con datos de prueba." en="Demo mode active with sample data." />
             : user?.role === "AGENCY"
               ? "Estas navegando identificado como agencia."
-              : <T es="Filtra y reserva directo por WhatsApp." en="Filter and book directly via WhatsApp." />}
+              : <T es="Filtra y reserva con pago protegido." en="Filter and book with protected payment." />}
         </p>
         <form className="filters">
           <input name="q" placeholder="Buscar" defaultValue={params.q || ""} />

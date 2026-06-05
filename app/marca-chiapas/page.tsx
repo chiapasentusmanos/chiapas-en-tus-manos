@@ -1,4 +1,5 @@
-import { CreditCard, MessageCircle, Package } from "lucide-react";
+import Link from "next/link";
+import { CreditCard, Package } from "lucide-react";
 import { demoMode, getDemoBrandProducts } from "@/lib/demo-data";
 import { prisma } from "@/lib/prisma";
 
@@ -15,7 +16,6 @@ type BrandProductView = {
   presentation: string;
   stock: number;
   shipping: string;
-  whatsapp: string;
   paymentMethods: string;
   images: Array<{ url: string; alt?: string | null }>;
   brandProfile: { businessName: string; registrationNumber: string; municipality: string };
@@ -96,9 +96,10 @@ export default async function BrandChiapasCatalogPage({
                   </span>
                   <div className="muted">Materiales: {product.materials}</div>
                   <div className="muted">Envio: {product.shipping}</div>
-                  <a className="button" href={whatsappProductUrl(product.whatsapp, product.name)} target="_blank" rel="noreferrer">
-                    <MessageCircle size={17} /> Solicitar por WhatsApp
-                  </a>
+                  <div className="muted">Stock disponible: {product.stock} pza(s)</div>
+                  <Link className={`button ${product.stock > 0 ? "" : "disabled-link"}`} href={product.stock > 0 ? `/checkout?type=product&id=${product.id}` : "#"}>
+                    <CreditCard size={17} /> {product.stock > 0 ? "Comprar ahora" : "Sin stock"}
+                  </Link>
                 </div>
               </article>
             ))}
@@ -115,10 +116,4 @@ function paymentMethodsLabel(value: string) {
   if (methods.includes("TRANSFER")) labels.push("Transferencia");
   if (methods.includes("CARD")) labels.push("Tarjeta Visa / Mastercard");
   return labels.join(" · ") || "Consultar forma de pago";
-}
-
-function whatsappProductUrl(phone: string, name: string) {
-  const cleanPhone = phone.replace(/\D/g, "");
-  const text = `Hola. Me interesa el producto Marca Chiapas "${name}". ¿Me compartes disponibilidad, envio y forma de compra?`;
-  return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
 }

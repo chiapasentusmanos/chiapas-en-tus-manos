@@ -1,4 +1,3 @@
-import { MessageCircle } from "lucide-react";
 import { demoMode, getDemoGuides } from "@/lib/demo-data";
 import { prisma } from "@/lib/prisma";
 
@@ -85,9 +84,7 @@ export default async function GuidesPage({
                   <div className="muted">Zonas: {guide.municipalities}</div>
                   <div className="muted">{guide.yearsExperience} anos de experiencia</div>
                   <p className="muted" style={{ margin: 0 }}>{guide.bio}</p>
-                  <a className="button" href={whatsappGuideUrl(guide.whatsapp, guide.user.name)} target="_blank" rel="noreferrer">
-                    <MessageCircle size={17} /> Contactar guia
-                  </a>
+                  <span className="button disabled-link">Contacto disponible despues de pago</span>
                 </div>
               </article>
             ))}
@@ -96,10 +93,4 @@ export default async function GuidesPage({
       </section>
     </main>
   );
-}
-
-function whatsappGuideUrl(phone: string, name: string) {
-  const cleanPhone = phone.replace(/\D/g, "");
-  const text = `Hola. Me interesa contactar al guia certificado ${name} para un servicio turistico en Chiapas.`;
-  return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
 }

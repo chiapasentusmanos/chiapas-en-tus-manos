@@ -63,6 +63,7 @@ model User {
   services         Service[] @relation("ServiceOwner")
   brandProducts    BrandProduct[]
   reservationRequests ReservationRequest[]
+  brandProductOrders BrandProductOrder[]
 }
 
 model Provider {
@@ -181,6 +182,7 @@ model BrandProduct {
   owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   brandProfile BrandChiapasProfile @relation(fields: [brandProfileId], references: [id], onDelete: Cascade)
   images BrandProductImage[]
+  orders BrandProductOrder[]
 
   @@index([status])
   @@index([productCategory])
@@ -193,6 +195,30 @@ model BrandProductImage {
   alt       String?
   productId String
   product   BrandProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model BrandProductOrder {
+  id        String   @id @default(cuid())
+  code      String   @default("")
+  name      String
+  email     String?
+  phone     String?
+  quantity  Int      @default(1)
+  total     Decimal  @db.Decimal(10, 2)
+  paymentMethod String @default("CARD")
+  paymentStatus PaymentStatus @default(PAID)
+  paidAt    DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  productId String
+  userId    String?
+  product   BrandProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([code])
+  @@index([paymentStatus])
+  @@index([createdAt])
 }
 
 model Category {

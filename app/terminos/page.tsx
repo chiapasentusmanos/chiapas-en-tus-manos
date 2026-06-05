@@ -9,7 +9,7 @@ export default function TermsPage() {
           <h2>Objeto</h2>
           <p>
             Chiapas En Tus Manos es una plataforma para consultar servicios turisticos, guias certificados, agencias,
-            proveedores y productos Marca Chiapas, asi como para iniciar solicitudes de reserva o compra por WhatsApp.
+            proveedores y productos Marca Chiapas, asi como para iniciar reservas o compras con pago protegido.
           </p>
 
           <h2>Registros y aprobacion</h2>
@@ -21,15 +21,14 @@ export default function TermsPage() {
 
           <h2>Reservas y compras</h2>
           <p>
-            Las reservas y solicitudes de productos se gestionan directamente entre el usuario y el proveedor mediante
-            WhatsApp u otros medios definidos. La plataforma facilita el contacto y seguimiento inicial.
+            Las reservas y compras se gestionan dentro de la plataforma. Los datos directos del proveedor se liberan
+            hasta que exista pago confirmado al 100%.
           </p>
 
           <h2>Pagos</h2>
           <p>
-            Los servicios y productos pueden indicar transferencia o tarjeta Visa/Mastercard como formas de pago. La
-            activacion de cobros reales con tarjeta requiere integrar un procesador de pagos y publicar condiciones
-            comerciales adicionales.
+            Los servicios y productos pueden pagarse por transferencia validada o tarjeta Visa/Mastercard mediante la
+            pasarela configurada. En modo pruebas, el pago se registra dentro de la plataforma para validar el flujo.
           </p>
 
           <h2>Responsabilidad de publicaciones</h2>

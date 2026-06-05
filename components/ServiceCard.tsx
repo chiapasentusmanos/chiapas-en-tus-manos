@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { CreditCard, MapPin, MessageCircle } from "lucide-react";
-import { money, paymentMethodLabels, whatsappUrl, type ServiceCard as ServiceCardType } from "@/lib/utils";
+import { CreditCard, MapPin } from "lucide-react";
+import { money, paymentMethodLabels, type ServiceCard as ServiceCardType } from "@/lib/utils";
 import { T } from "@/components/T";
 
 export function ServiceCard({ service, agency = false }: { service: ServiceCardType; agency?: boolean }) {
@@ -34,9 +34,9 @@ export function ServiceCard({ service, agency = false }: { service: ServiceCardT
         </span>
         <div className="actions">
           <Link className="ghost-button" href={`/servicios/${service.id}`}><T es="Ver detalle" en="View details" /></Link>
-          <a className="button" href={whatsappUrl(service.whatsapp, service.name, agency)} target="_blank" rel="noreferrer">
-            <MessageCircle size={17} /> <T es="Reservar" en="Book" />
-          </a>
+          <Link className="button" href={`/checkout?type=service&id=${service.id}`}>
+            <CreditCard size={17} /> <T es="Pagar / reservar" en="Pay / book" />
+          </Link>
         </div>
       </div>
     </article>
